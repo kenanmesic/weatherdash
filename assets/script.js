@@ -1,108 +1,82 @@
-var currentWeather = document.getElementById('#currentweather')
-var searchHistory = document.getElementById('searchhistory')
-var searchHistory = JSON.parse(localStorage.getItem('historyArray'))||[]
+var key = '49e7b0dde4bb21e66c57c76ae13e4b9f'
+var searchButn = document.querySelector('#search-btn')
+var currentWeatherEl = document.querySelector('#current-weather')
+var fiveDay = document.querySelector('#fiveDay')
+var wind = document.querySelector('.wind')
+var humidity = document.querySelector('.humidity')
 
+function checkLocalStorage() {
+  const lastCity = localStorage.getItem('lastSearch')
+  const buttonEl = document.createElement('button')
+  buttonEl.textContent = lastCity
+  buttonEl.addEventListener('click', function () {
+    getWeather(lastCity)
+  })
+  buttonEl.classList.add('btn')
 
-//adds the search button history
-for(var i = 0; i < searchHistory.length; i++){
-    var searchBtn = $('<button>').addClass('btn btn-success').text(searchHistory[i])
-    $('#searchhistory').append(searchBtn)
+  document.getElementById('search-history').appendChild(buttonEl)
+  console.log(lastCity)
+}
+checkLocalStorage()
+
+function clearHistroyDiv() {
+  document.getElementById('search-history').innerHTML = ''
 }
 
-//clears local storage and sets the search history as an empty string
-$('#clear').on('click', function(){
-    localStorage.clear()
-    searchHistory.innerHTML = ''
-})
+function getWeather(cityName) {
+  const allSearches = JSON.parse(localStorage.getItem('city')) || []
 
-//pushs the search input into local storage 
-$('#searchbutton').on('click', function(){
-    var searchvalue = $("#searchinput").val()
-    var searchBtn = $('<button>').addClass('btn').text(searchvalue)
-    searchHistory.push(searchvalue)
-    localStorage.setItem('historyArray',JSON.stringify(searchHistoryArray))
-    $('#searchhistory').append(searchBtn)
-    geocode(searchvalue)
+  localStorage.setItem('lastSearch', cityName)
+  localStorage.setItem(
+    'city', 
+    JSON.stringify(
+        ...allSearches,
+        cityName, 
+    )
+  )
+  clearHistroyDiv() /
+  checkLocalStorage()
 
+  var apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${key}&units=imperial`
+  fetch(apiUrl)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+      currentWeatherEl.innerHTML = `<h3 id="title">${data.name}</h3>
+        <p>Temp: ${data.main.temp}</p>
+        <p>Wind: ${data.wind.speed}</p>
+        <p>Humidity: ${data.main.humidity}</p>
+        <img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"/>`
 
-//uses users search to call the api for their location
-function geocode(searchinput){
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${searchinput}&limit=5&appid=6f5354d6c2eb4d8b50da66b8c8c0fcbc`)
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-      
-        currentWeather(data[0].lat,data[0].lon)
+      var url = `https://api.openweathermap.org/data/2.5/forecast?lat=${data.coord.lat}&lon=${data.coord.lon}&appid=${key}&units=imperial`
+      fetch(url)
+        .then((response) => response.json())
+        .then((fiveDay) => {
+          $('#fiveDay').empty()
+          console.log(fiveDay.list.length)
+          for (var i = 3; i < fiveDay.list.length; i += 8) {
+            console.log(fiveDay.list[i])
+            var card = document.createElement('div')
+            card.classList.add('col-sm-2')
 
+            var content = `
+                <div class="card border-dark">
+                    <div id="dayOne" class="card-body">
+                        <h5 class="card-title">${fiveDay.list[i].dt_txt}</h5>
+                        <p class="temp">Temp: ${fiveDay.list[i].main.temp}</p>
+                        <p class="wind">Wind: ${fiveDay.list[i].wind.speed}</p>
+                        <p class="humidity">Humidity: ${fiveDay.list[i].main.humidity}</p>
+                        <img src="http://openweathermap.org/img/wn/${fiveDay.list[i].weather[0].icon}@2x.png"/>
+                        
+                    </div>
+                </div>`
+            card.innerHTML = content
+            fiveDayEl.appendChild(card)
+          }
+        })
     })
 }
-
-
-//creates the current weather section
-function currentWeather(lat,lon){
-    fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=6f5354d6c2eb4d8b50da66b8c8c0fcbc&units=imperial`)
-    .then(response => response.json())
-    .then(data => {
-        console.log(data)
-        $('#currentContainer').empty()
-       var currentWeather = document.createElement('div')
-       currentWeather.setAttribute('id', 'currentweather')
-       $('#currentContainer').append(currentWeather)
-        var mainCard = $('<div>').addClass('card')
-        var cityName = $('<h1>').text('City: ' + data.name)
-        var temp = $('<h1>').text('Temp: ' + data.main.temp)
-        var feelsLike = $('<h1>').text('Feels Like: ' + data.main.feels_like)
-        var humidity = $('<h1>').text('Humidity: ' + data.main.humidity)
-        var windSpeed = $('<h1>').text('Wind Speed: ' + data.wind.speed)
-        mainCard.append( cityName, temp, feelsLike, humidity, windSpeed)
-        $('#currentweather').append(mainCard)
-        var forecast = $('<div>').addClass('forecast')
-        $('.forecast').html('5 Day Forecast')
-        $('#currentweather').append(forecast)
-        getforecast(lat,lon)
-
-    })
-}
-
-//creates 5 day weather forcast section
-function getforecast(lat,lon){
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=6f5354d6c2eb4d8b50da66b8c8c0fcbc&units=imperial`)
-    .then(response => response.json())
-    .then(data => {
-        console.log('data', data)
-
-        var day1 = data.list[5]
-        var day2 = data.list[13]
-        var day3 = data.list[21]
-        var day4 = data.list[29]
-        var day5 = data.list[37]
-        var daysarray = [day1, day2, day3, day4, day5]
-        console.log(daysarray)
-        for (let i = 0; i < daysarray.length; i++){
-        var daydata = daysarray[i].main
-        var temp = $('<h1>').text('Temp: ' + daydata.temp)
-        var feelslike = $('<h1>').text('Feels Like: ' + daydata.feels_like)
-        
-        //weather img icon
-        var iconurl = `https://openweathermap.org/img/w/${daysarray[i].weather[0].icon}.png`
-
-        var icon = document.createElement('img')
-        icon.setAttribute('src', iconurl)
-
-
-            // adds the elements to 5 day forecast titlecards
-            var forecastCard = document.createElement('div')
-            var forecastCardTitle = document.createElement('p')
-            var forecastTemp = document.createElement('p')
-            forecastCardTitle.innerHTML = ('Day ' + (i + 1))
-            forecastTemp.innerHTML = daydata.temp
-            forecastCard.appendChild(icon)
-            forecastCard.appendChild(forecastCardTitle)
-            forecastCard.appendChild(forecastTemp)
-
-         $('.forecast').append(forecastCard)
-        
-        }
-    })
-}
+searchButn.addEventListener('click', (event) => {
+  var searchCity = document.querySelector('#search-city')
+  getWeather(searchCity.value)
 })

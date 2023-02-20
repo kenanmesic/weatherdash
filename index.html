@@ -2,56 +2,55 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Weather Dashboard</title>
-
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css">
-
-  <link rel="stylesheet" href="./assets/css/style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <link rel="stylesheet" href="./Assets/css/style.css">
+    <title>Weather Dashboard</title>
 </head>
 
-<body class="container">
+<body>
 
-  <div class="row text-center bg-primary text-white">
-    <h1>Weather Dashboard</h1>
-  </div>
+    <div class="p-2 mb-4 bg-light rounded-3">
+        <div class="text-center container-fluid py-0">
+            <h1 class="text-white bg-primary display-5 fw-bold">Weather Dashboard</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
 
-  <div class="row">
-      
-      <div class="column col-3">
-        <form>
-          <label class="text-primary">Search for a City:</label>
-          <input class="form-control my-2 text-primary" type="search" placeholder="Search" id="city-input">
-          <button class="btn btn-outline-primary my-2" style="width: 100%" type="submit" id="search-button">Enter City</button>
-        </form>
+            <h1 class="ms-2 w-100">Search for a City:</h1>
+            <input id="search-city" type="text" class="ms-2 w-100 form-control"
+                placeholder="Enter city to view weather report" aria-label="Server">
+            <button id="search-btn" type="button" class="mt-2 p-2 ms-2 w-100 btn btn-primary">Search</button>
+            <hr>
+            <p>Search History</p>
+            <div id="search-history" type="button" class="mt-2 p-2 ms-2 w-100 btn btn-primary">
 
-        <button class="btn btn-outline-primary my-2" style="width: 100%" type="submit" id="clear-button">Clear History</button>
-        
-        <div class="border-top border-primary" id="past-searches">
+            </div>
+
         </div>
 
-      </div>
+        <div class="col-sm-9">
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div id="current-weather" class="container-fluid py-1">
+                    <h3 id="title"></h3>
 
-      <div class="column col-9">
-        <div class="row" id="currentConditions"></div>
-        
-        <div class="row" id="fiveDayForecastHeader"></div>
-        <div class="d-flex flex-row flex-wrap justify-content-between" id="fiveDayForecast"></div>
-      </div>
+                </div>
+            </div>
 
-  </div>
+            <h4>5-Day Forecast</h4>
+            <div id="fiveDay" class="row">
+
+            </div>
+        </div>
+
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./assets/script.js"></script>
+
 </body>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-
-<script src="./assets/js/script.js"></script>
 
 </html>
